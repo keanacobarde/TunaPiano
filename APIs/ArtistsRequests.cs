@@ -16,7 +16,7 @@ namespace TunaPiano.APIs
             app.MapPost("/artists", (TunaPianoDbContext db, Artist newArtist) =>
             {
                 Artist checkArtist = db.Artists.FirstOrDefault(a => a.Id == newArtist.Id);
-                if (checkArtist != null)
+                if (checkArtist == null)
                 {
                     try
                     {
@@ -36,7 +36,7 @@ namespace TunaPiano.APIs
             });
 
             // DELETING AN ARTIST
-            app.MapDelete("/Artists/{id}", (TunaPianoDbContext db, int id) =>
+            app.MapDelete("/artists/{id}", (TunaPianoDbContext db, int id) =>
             {
                 Artist selectedArtist = db.Artists.FirstOrDefault(p => p.Id == id);
                 if (selectedArtist == null)

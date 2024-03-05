@@ -13,16 +13,16 @@ namespace TunaPiano.APIs
             });
 
             //CREATING A GENRE
-            app.MapPost("/Genres", (TunaPianoDbContext db, Genre newGenre) =>
+            app.MapPost("/genres", (TunaPianoDbContext db, Genre newGenre) =>
             {
                 Genre checkGenre = db.Genres.FirstOrDefault(g => g.Id == newGenre.Id);
-                if (checkGenre != null)
+                if (checkGenre == null)
                 {
                     try
                     {
                         db.Genres.Add(newGenre);
                         db.SaveChanges();
-                        return Results.Created($"/Genres/{newGenre.Id}", newGenre);
+                        return Results.Created($"/genres/{newGenre.Id}", newGenre);
                     }
                     catch (DbUpdateException)
                     {
@@ -36,8 +36,7 @@ namespace TunaPiano.APIs
             });
 
             // DELETING A GENRE
-            // DELETING A Genre
-            app.MapDelete("/Genres/{id}", (TunaPianoDbContext db, int id) =>
+            app.MapDelete("/genres/{id}", (TunaPianoDbContext db, int id) =>
             {
                 Genre selectedGenre = db.Genres.FirstOrDefault(p => p.Id == id);
                 if (selectedGenre == null)

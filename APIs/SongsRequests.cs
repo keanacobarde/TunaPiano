@@ -1,6 +1,8 @@
-﻿namespace TunaPiano.APIs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TunaPiano.Models;
+
+namespace TunaPiano.APIs
+{ 
 
     public class SongsRequests
 {
@@ -12,7 +14,7 @@ using TunaPiano.Models;
             });
 
         // CREATING A SONG
-        app.MapPost("/Songs", (TunaPianoDbContext db, Song newSong) =>
+        app.MapPost("/songs", (TunaPianoDbContext db, Song newSong) =>
         {
             Song checkSong = db.Songs.FirstOrDefault(s => s.Id == newSong.Id);
             if (checkSong != null)
@@ -35,7 +37,7 @@ using TunaPiano.Models;
         });
 
         // DELETING A SONG
-        app.MapDelete("/Songs/{id}", (TunaPianoDbContext db, int id) =>
+        app.MapDelete("/songs/{id}", (TunaPianoDbContext db, int id) =>
         {
             Song selectedSong = db.Songs.FirstOrDefault(p => p.Id == id);
             if (selectedSong == null)
