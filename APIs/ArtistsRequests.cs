@@ -7,7 +7,7 @@ namespace TunaPiano.APIs
     {
         public static void Map(WebApplication app)
         {
-            // GET LIST OF ALL ArtistS
+            // GET LIST OF ALL ARTIST
             app.MapGet("/artists", (TunaPianoDbContext db) => {
                 return db.Artists.ToList();
             });

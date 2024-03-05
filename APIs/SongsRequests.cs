@@ -17,7 +17,7 @@ namespace TunaPiano.APIs
         app.MapPost("/songs", (TunaPianoDbContext db, Song newSong) =>
         {
             Song checkSong = db.Songs.FirstOrDefault(s => s.Id == newSong.Id);
-            if (checkSong != null)
+            if (checkSong == null)
             {
                 try
                 {
