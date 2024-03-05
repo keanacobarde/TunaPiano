@@ -34,6 +34,19 @@ using TunaPiano.Models;
             }
         });
 
+        // DELETING A SONG
+        app.MapDelete("/Songs/{id}", (TunaPianoDbContext db, int id) =>
+        {
+            Song selectedSong = db.Songs.FirstOrDefault(p => p.Id == id);
+            if (selectedSong == null)
+            {
+                return Results.NotFound();
+            }
+            db.Songs.Remove(selectedSong);
+            db.SaveChanges();
+            return Results.Ok(db.Songs);
+        });
+
     }
     }
 }

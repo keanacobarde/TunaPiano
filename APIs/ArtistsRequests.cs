@@ -7,7 +7,7 @@ namespace TunaPiano.APIs
     {
         public static void Map(WebApplication app)
         {
-            // GET LIST OF ALL SONGS
+            // GET LIST OF ALL ArtistS
             app.MapGet("/artists", (TunaPianoDbContext db) => {
                 return db.Artists.ToList();
             });
@@ -35,7 +35,18 @@ namespace TunaPiano.APIs
                 }
             });
 
-
+            // DELETING AN ARTIST
+            app.MapDelete("/Artists/{id}", (TunaPianoDbContext db, int id) =>
+            {
+                Artist selectedArtist = db.Artists.FirstOrDefault(p => p.Id == id);
+                if (selectedArtist == null)
+                {
+                    return Results.NotFound();
+                }
+                db.Artists.Remove(selectedArtist);
+                db.SaveChanges();
+                return Results.Ok(db.Artists);
+            });
         }
     }
 }

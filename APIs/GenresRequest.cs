@@ -7,7 +7,7 @@ namespace TunaPiano.APIs
     {
         public static void Map(WebApplication app)
         {
-            // GET LIST OF ALL SONGS
+            // GET LIST OF ALL GenreS
             app.MapGet("/genres", (TunaPianoDbContext db) => {
                 return db.Genres.ToList();
             });
@@ -33,6 +33,20 @@ namespace TunaPiano.APIs
                 {
                     return Results.Conflict("Genre already exists");
                 }
+            });
+
+            // DELETING A GENRE
+            // DELETING A Genre
+            app.MapDelete("/Genres/{id}", (TunaPianoDbContext db, int id) =>
+            {
+                Genre selectedGenre = db.Genres.FirstOrDefault(p => p.Id == id);
+                if (selectedGenre == null)
+                {
+                    return Results.NotFound();
+                }
+                db.Genres.Remove(selectedGenre);
+                db.SaveChanges();
+                return Results.Ok(db.Genres);
             });
         }
     }
