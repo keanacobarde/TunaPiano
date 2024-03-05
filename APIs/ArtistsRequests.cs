@@ -1,4 +1,7 @@
-﻿namespace TunaPiano.APIs
+﻿using TunaPiano.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace TunaPiano.APIs
 {
     public class ArtistsRequests
     {
@@ -8,6 +11,31 @@
             app.MapGet("/artists", (TunaPianoDbContext db) => {
                 return db.Artists.ToList();
             });
+
+            // CREATING AN ARTIST
+            app.MapPost("/artists", (TunaPianoDbContext db, Artist newArtist) =>
+            {
+                Artist checkArtist = db.Artists.FirstOrDefault(a => a.Id == newArtist.Id);
+                if (checkArtist != null)
+                {
+                    try
+                    {
+                        db.Artists.Add(newArtist);
+                        db.SaveChanges();
+                        return Results.Created($"/Artists/{newArtist.Id}", newArtist);
+                    }
+                    catch (DbUpdateException)
+                    {
+                        return Results.BadRequest("Invalid data submitted");
+                    }
+                }
+                else
+                {
+                    return Results.Conflict("Artist already exists");
+                }
+            });
+
+
         }
     }
 }
