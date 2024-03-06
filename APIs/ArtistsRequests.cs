@@ -1,5 +1,6 @@
 ﻿using TunaPiano.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TunaPiano.APIs
 {
@@ -11,6 +12,26 @@ namespace TunaPiano.APIs
             app.MapGet("/artists", (TunaPianoDbContext db) => {
                 return db.Artists.ToList();
             });
+
+            //// GET ARTISTS AND SIMILAR GENRES
+            //app.MapGet("/artists/{artistId}/related", (TunaPianoDbContext db, int artistId) =>
+            //{
+            //    var artistWithSongsAndGenres = from artist in db.Artists
+            //                       join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+            //                       where artist.Id == artistId
+            //                       select song ;
+            //    var songGenres = artistWithSongsAndGenres.Select(s => s.Genres);
+
+            //    var allArtistsAndDetails = from artist in db.Artists
+            //                               join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+            //                               select new { artist, song };
+
+            //if (allArtistsAndDetails.Any(ad => ad.song.Genres == songGenres))
+            //    {
+            //      return allArtistsAndDetails.Select(aad => new {id=aad.artist.Id, name=aad.artist.Name});
+            //    }
+            //return Results.NotFound();
+            //});
 
             // GET SPECIFIC ARTST AND ASSOCIATED SONGS
             app.MapGet("/artists/{artistId}", (TunaPianoDbContext db, int artistId) => 
