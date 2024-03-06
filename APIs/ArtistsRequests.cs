@@ -1,5 +1,6 @@
 ﻿using TunaPiano.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TunaPiano.APIs
 {
@@ -10,6 +11,47 @@ namespace TunaPiano.APIs
             // GET LIST OF ALL ARTIST
             app.MapGet("/artists", (TunaPianoDbContext db) => {
                 return db.Artists.ToList();
+            });
+
+            //// GET ARTISTS AND SIMILAR GENRES
+            //app.MapGet("/artists/{artistId}/related", (TunaPianoDbContext db, int artistId) =>
+            //{
+            //    var artistWithSongsAndGenres = from artist in db.Artists
+            //                       join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+            //                       where artist.Id == artistId
+            //                       select song ;
+            //    var songGenres = artistWithSongsAndGenres.Select(s => s.Genres);
+
+            //    var allArtistsAndDetails = from artist in db.Artists
+            //                               join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+            //                               select new { artist, song };
+
+            //if (allArtistsAndDetails.Any(ad => ad.song.Genres == songGenres))
+            //    {
+            //      return allArtistsAndDetails.Select(aad => new {id=aad.artist.Id, name=aad.artist.Name});
+            //    }
+            //return Results.NotFound();
+            //});
+
+            // GET SPECIFIC ARTST AND ASSOCIATED SONGS
+            app.MapGet("/artists/{artistId}", (TunaPianoDbContext db, int artistId) => 
+            {
+                var artistAndSongs = from artist in db.Artists
+                                    join song in db.Songs on artist.Id equals song.Artist_Id
+                                    where artist.Id == artistId
+                                    select new { artist, song };
+                return artistAndSongs;
+            });
+
+            // SEARCH ARTISTS BY GENRE
+            app.MapGet("/artists/search/genre", (TunaPianoDbContext db, string Query) =>
+            {
+                var genre = db.Genres.FirstOrDefault(g => g.Description.ToLower() == Query.ToLower());
+                var artistsAndSongs = from artist in db.Artists
+                                      join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+                                      where song.Genres.Contains(genre)
+                                      select artist;
+                return artistsAndSongs;
             });
 
             // CREATING AN ARTIST
@@ -33,6 +75,33 @@ namespace TunaPiano.APIs
                 {
                     return Results.Conflict("Artist already exists");
                 }
+            });
+
+            //UPDATING AN ARTIST
+            app.MapPut("/artists/{id}/edit", (TunaPianoDbContext db, int id, Artist artistToUpdateInfo) =>
+            {
+                Artist artistToUpdate = db.Artists.FirstOrDefault(p => p.Id == id);
+                if (artistToUpdate == null)
+                {
+                    return Results.NotFound();
+                }
+
+                if (artistToUpdateInfo.Name != null)
+                {
+                    artistToUpdate.Name = artistToUpdateInfo.Name;
+                }
+                if (artistToUpdateInfo.Age != null)
+                {
+                    artistToUpdate.Age = artistToUpdateInfo.Age;
+                }
+                if (artistToUpdateInfo.Bio != null)
+                {
+                    artistToUpdate.Bio = artistToUpdateInfo.Bio;
+                }
+
+                db.SaveChanges();
+
+                return Results.NoContent();
             });
 
             // DELETING AN ARTIST
