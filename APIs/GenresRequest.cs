@@ -22,6 +22,17 @@ namespace TunaPiano.APIs
             
             });
 
+            // GET POPULAR GENRES
+            app.MapGet("/genres/popular", (TunaPianoDbContext db) =>
+            {
+                var sortedGenre = db.Genres
+                    .Include(g => g.Songs)
+                    .OrderByDescending(gs => gs.Songs.Count)
+                    .ToList()
+                    .Select(sg => new { id=sg.Id, description=sg.Description, song_count=sg.Songs.Count });
+                return sortedGenre;
+            });
+
             //CREATING A GENRE
             app.MapPost("/genres", (TunaPianoDbContext db, Genre newGenre) =>
             {
