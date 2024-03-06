@@ -13,6 +13,15 @@ namespace TunaPiano.APIs
             });
 
             // SEARCH ARTISTS BY GENRE
+            app.MapGet("/artists/search/genre", (TunaPianoDbContext db, string Query) =>
+            {
+                var genre = db.Genres.FirstOrDefault(g => g.Description.ToLower() == Query.ToLower());
+                var artistsAndSongs = from artist in db.Artists
+                                      join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+                                      where song.Genres.Contains(genre)
+                                      select artist;
+                return artistsAndSongs;
+            });
 
             // CREATING AN ARTIST
             app.MapPost("/artists", (TunaPianoDbContext db, Artist newArtist) =>
