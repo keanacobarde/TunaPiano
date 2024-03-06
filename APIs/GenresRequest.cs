@@ -35,6 +35,25 @@ namespace TunaPiano.APIs
                 }
             });
 
+            // UPDATING A GENRE
+            app.MapPut("/genres/{id}/edit", (TunaPianoDbContext db, int id, Genre genreToUpdateInfo) =>
+            {
+                Genre genreToUpdate = db.Genres.FirstOrDefault(p => p.Id == id);
+                if (genreToUpdate == null)
+                {
+                    return Results.NotFound();
+                }
+
+                if (genreToUpdateInfo.Description != null)
+                {
+                    genreToUpdate.Description = genreToUpdateInfo.Description;
+                }
+
+                db.SaveChanges();
+
+                return Results.NoContent();
+            });
+
             // DELETING A GENRE
             app.MapDelete("/genres/{id}", (TunaPianoDbContext db, int id) =>
             {
