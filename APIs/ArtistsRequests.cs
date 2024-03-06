@@ -12,6 +12,8 @@ namespace TunaPiano.APIs
                 return db.Artists.ToList();
             });
 
+            // SEARCH ARTISTS BY GENRE
+
             // CREATING AN ARTIST
             app.MapPost("/artists", (TunaPianoDbContext db, Artist newArtist) =>
             {

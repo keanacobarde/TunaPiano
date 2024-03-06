@@ -8,9 +8,22 @@ namespace TunaPiano.APIs
 {
         public static void Map(WebApplication app)
         {
+
             // GET LIST OF ALL SONGS
-            app.MapGet("/songs", (TunaPianoDbContext db) => { 
+            app.MapGet("/songs", (TunaPianoDbContext db) => {
                 return db.Songs.ToList();
+            });
+
+            // SEARCH SONGS BY GENRE
+            app.MapGet("/songs/search", (TunaPianoDbContext db, string Query) => 
+            { 
+                var songsWithGenres = db.Songs
+                .Include(s => s.Genres)
+                .ToList();
+
+                var searchResults = songsWithGenres.Where(s => s.Genres.Where(g => g.Description.ToLower() == Query.ToLower()).Count() != 0);
+
+                return searchResults; 
             });
 
         // CREATING A SONG
