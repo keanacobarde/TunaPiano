@@ -12,6 +12,16 @@ namespace TunaPiano.APIs
                 return db.Artists.ToList();
             });
 
+            // GET SPECIFIC ARTST AND ASSOCIATED SONGS
+            app.MapGet("/artists/{artistId}", (TunaPianoDbContext db, int artistId) => 
+            {
+                var artistAndSongs = from artist in db.Artists
+                                    join song in db.Songs on artist.Id equals song.Artist_Id
+                                    where artist.Id == artistId
+                                    select new { artist, song };
+                return artistAndSongs;
+            });
+
             // SEARCH ARTISTS BY GENRE
             app.MapGet("/artists/search/genre", (TunaPianoDbContext db, string Query) =>
             {
