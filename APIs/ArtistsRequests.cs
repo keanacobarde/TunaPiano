@@ -35,6 +35,33 @@ namespace TunaPiano.APIs
                 }
             });
 
+            //UPDATING AN ARTIST
+            app.MapPut("/artists/{id}/edit", (TunaPianoDbContext db, int id, Artist artistToUpdateInfo) =>
+            {
+                Artist artistToUpdate = db.Artists.FirstOrDefault(p => p.Id == id);
+                if (artistToUpdate == null)
+                {
+                    return Results.NotFound();
+                }
+
+                if (artistToUpdateInfo.Name != null)
+                {
+                    artistToUpdate.Name = artistToUpdateInfo.Name;
+                }
+                if (artistToUpdateInfo.Age != null)
+                {
+                    artistToUpdate.Age = artistToUpdateInfo.Age;
+                }
+                if (artistToUpdateInfo.Bio != null)
+                {
+                    artistToUpdate.Bio = artistToUpdateInfo.Bio;
+                }
+
+                db.SaveChanges();
+
+                return Results.NoContent();
+            });
+
             // DELETING AN ARTIST
             app.MapDelete("/artists/{id}", (TunaPianoDbContext db, int id) =>
             {
