@@ -36,8 +36,39 @@ namespace TunaPiano.APIs
             }
         });
 
-        // DELETING A SONG
-        app.MapDelete("/songs/{id}", (TunaPianoDbContext db, int id) =>
+            // UPDATING A SONG
+            app.MapPut("/songs/{id}/edit", (TunaPianoDbContext db, int id, song songToUpdateInfo) =>
+            {
+                song songToUpdate = db.songs.FirstOrDefault(p => p.Id == id);
+                if (songToUpdate == null)
+                {
+                    return Results.NotFound();
+                }
+
+                if (songToUpdateInfo.Title != null)
+                {
+                    songToUpdate.Title = songToUpdateInfo.Title;
+                }
+                if (songToUpdateInfo.Artist_id != null)
+                {
+                    songToUpdate.artist_id = songToUpdateInfo.Artist_id;
+                }
+                if (songToUpdateInfo.Albumn != null)
+                {
+                    songToUpdate.Albumn = songToUpdateInfo.Albumn;
+                }
+                if (songToUpdateInfo.Length != null)
+                {
+                    songToUpdate.Length = songToUpdateInfo.Length;
+                }
+
+                db.SaveChanges();
+
+                return Results.NoContent();
+            });
+
+            // DELETING A SONG
+            app.MapDelete("/songs/{id}", (TunaPianoDbContext db, int id) =>
         {
             Song selectedSong = db.Songs.FirstOrDefault(p => p.Id == id);
             if (selectedSong == null)
