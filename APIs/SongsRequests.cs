@@ -37,9 +37,9 @@ namespace TunaPiano.APIs
         });
 
             // UPDATING A SONG
-            app.MapPut("/songs/{id}/edit", (TunaPianoDbContext db, int id, song songToUpdateInfo) =>
+            app.MapPut("/songs/{id}/edit", (TunaPianoDbContext db, int id, Song songToUpdateInfo) =>
             {
-                song songToUpdate = db.songs.FirstOrDefault(p => p.Id == id);
+                Song songToUpdate = db.Songs.FirstOrDefault(p => p.Id == id);
                 if (songToUpdate == null)
                 {
                     return Results.NotFound();
@@ -49,13 +49,13 @@ namespace TunaPiano.APIs
                 {
                     songToUpdate.Title = songToUpdateInfo.Title;
                 }
-                if (songToUpdateInfo.Artist_id != null)
+                if (songToUpdateInfo.Artist_Id != null)
                 {
-                    songToUpdate.artist_id = songToUpdateInfo.Artist_id;
+                    songToUpdate.Artist_Id = songToUpdateInfo.Artist_Id;
                 }
-                if (songToUpdateInfo.Albumn != null)
+                if (songToUpdateInfo.Album != null)
                 {
-                    songToUpdate.Albumn = songToUpdateInfo.Albumn;
+                    songToUpdate.Album = songToUpdateInfo.Album;
                 }
                 if (songToUpdateInfo.Length != null)
                 {
