@@ -7,9 +7,19 @@ namespace TunaPiano.APIs
     {
         public static void Map(WebApplication app)
         {
-            // GET LIST OF ALL GenreS
+            // GET LIST OF ALL GENRES
             app.MapGet("/genres", (TunaPianoDbContext db) => {
                 return db.Genres.ToList();
+            });
+
+            // GET DETAILS OF A SINGLE GENRE WITH ASSOCIATED SONGS
+            app.MapGet("/genres/{genreId}", (TunaPianoDbContext db, int genreId) =>
+            {
+                var genreWithDetails = db.Genres
+                    .Include(g => g.Songs)
+                    .FirstOrDefault(gs => gs.Id == genreId);
+                return genreWithDetails;
+            
             });
 
             //CREATING A GENRE
