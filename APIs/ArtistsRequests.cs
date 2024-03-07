@@ -14,24 +14,50 @@ namespace TunaPiano.APIs
             });
 
             //// GET ARTISTS AND SIMILAR GENRES
-            //app.MapGet("/artists/{artistId}/related", (TunaPianoDbContext db, int artistId) =>
-            //{
-            //    var artistWithSongsAndGenres = from artist in db.Artists
-            //                       join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
-            //                       where artist.Id == artistId
-            //                       select song ;
-            //    var songGenres = artistWithSongsAndGenres.Select(s => s.Genres);
+            app.MapGet("/artists/{artistId}/related", (TunaPianoDbContext db, int artistId) =>
+            {
+                // getting artist songs 
+                var artistWithSongsAndGenres = from artist in db.Artists
+                                               join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
+                                               where artist.Id == artistId
+                                               select song;
+                // selecting only the genres from the songs
+                var songGenres = artistWithSongsAndGenres.Select(s => s.Genres).ToList();
+                try
+                {
+                    // getting all songs and their respective genres
+                    var songsWithGenres = db.Songs.Include(s => s.Genres);
 
-            //    var allArtistsAndDetails = from artist in db.Artists
-            //                               join song in db.Songs.Include(s => s.Genres) on artist.Id equals song.Artist_Id
-            //                               select new { artist, song };
+                    var songsWithRelatedGenres = songGenres[0]
+                    .Select(sg => songsWithGenres
+                    .Where(swg => swg.Genres
+                    .Where(swgg => swgg.Id == sg.Id)
+                    .Count() != 0))
+                    .ToList();
 
-            //if (allArtistsAndDetails.Any(ad => ad.song.Genres == songGenres))
-            //    {
-            //      return allArtistsAndDetails.Select(aad => new {id=aad.artist.Id, name=aad.artist.Name});
-            //    }
-            //return Results.NotFound();
-            //});
+                    var artistIds = songsWithRelatedGenres[0]
+                    .Select(swrg => swrg.Artist_Id).ToList();
+
+                    var relatedArtists = new List<Artist>();
+
+                    for (int i = 0; i < artistIds.Count; i++)
+                    {
+                        foreach (var dbArtist in db.Artists)
+                        {
+                            if (dbArtist.Id == artistIds[0])
+                            {
+                                relatedArtists.Add(dbArtist);
+                            }
+                        }
+                    }
+
+                    return relatedArtists.Distinct();
+                }
+                catch
+                {
+                    return null;
+                }
+            });
 
             // GET SPECIFIC ARTST AND ASSOCIATED SONGS
             app.MapGet("/artists/{artistId}", (TunaPianoDbContext db, int artistId) => 
